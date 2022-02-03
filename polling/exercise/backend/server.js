@@ -9,8 +9,8 @@ const getMsgs = () => Array.from(msg).reverse();
 
 // feel free to take out, this just seeds the server with at least one message
 msg.push({
-  user: "brian",
-  text: "hi",
+  user: "Octopus",
+  text: "Welcome all - we're back up",
   time: Date.now(),
 });
 
@@ -20,17 +20,36 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(express.static("frontend"));
 
-app.get("/poll", function (req, res) {
+app.get("/poll", function (request, response) {
   // use getMsgs to get messages to send back
-  // write code here
+  response.json({
+    msg: getMsgs(),
+  })
 });
 
-app.post("/poll", function (req, res) {
+app.post("/poll", function (request, response) {
   // add a new message to the server
-  // write code here
+  // get the user and text from the request
+  const { user, text } = request.body;
+
+  // ??
+  // currentId++;
+
+  // add to msgs array
+  msg.push({
+    user,
+    text,
+    time: Date.now(),
+  });
+
+  // respond with ok
+  response.json({
+    status: 'ok',
+  });
 });
 
 // start the server
 const port = process.env.PORT || 3000;
-app.listen(port);
-console.log(`listening on http://localhost:${port}`);
+app.listen(port, () => {
+  console.log(`listening on http://localhost:${port}`);
+});

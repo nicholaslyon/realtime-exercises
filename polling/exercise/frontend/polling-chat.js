@@ -15,13 +15,45 @@ chat.addEventListener("submit", function (e) {
 });
 
 async function postNewMsg(user, text) {
-  // post to /poll a new message
-  // write code here
+  // set up data
+  const data = {
+    user,
+    text,
+  };
+
+  // request options
+  const options = {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  // set POST request
+  const response = await fetch('/poll', options);
+  const json = await response.json();
 }
 
 async function getNewMsgs() {
-  // poll the server
-  // write code here
+  // set up vars
+  let json;
+
+  // try the fetch
+  try {
+    const response = await fetch('/poll');
+    json = await response.json();
+  } catch (e) {
+    // back off code would go here
+    console.error('polling error', e);
+  }
+
+  // set all chat messages as the json response
+  allChat = json.msg;
+  render();
+
+  // set timeout to call getNewMsgs again
+  setTimeout(getNewMsgs, INTERVAL);
 }
 
 function render() {
