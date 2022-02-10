@@ -19,11 +19,33 @@ const server = http.createServer((request, response) => {
   });
 });
 
-/*
- *
- * Code goes here
- *
- */
+// setup socket.io server
+const io = new Server(server, {});
+
+// add listener for connection
+io.on('connection', (socket) => {
+  console.log(`connected: ${socket.id}`);
+
+  // emit initial messages on connection to that socket
+  socket.emit('messages:get', { msg: getMsgs() });
+
+  // add listener for when a message is posted
+  socket.on('messages:post', (data) => {
+    msg.push({
+      user: data.user,
+      text: data.text,
+      time: Date.now(),
+    })
+
+    // emit updated messages to all sockets
+    io.emit('messages:get', { msg: getMsgs() });
+  })
+
+  // setup disconnect
+  socket.on('disconnect', () => {
+    console.log(`disconnect: ${socket.id}`);
+  })
+})
 
 const port = process.env.PORT || 8080;
 server.listen(port, () =>
